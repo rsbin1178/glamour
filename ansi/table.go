@@ -121,6 +121,12 @@ func (e *TableElement) setBorders(ctx RenderContext) {
 	ctx.table.lipgloss.BorderLeft(false)
 	ctx.table.lipgloss.BorderRight(false)
 	ctx.table.lipgloss.BorderBottom(false)
+	// Inter-row dividers are opt-in: lipgloss guards the separator end-caps
+	// behind the left and right borders, so enabling this with the frame off
+	// draws a clean rule with no protruding caps.
+	if rules.RowBorder != nil {
+		ctx.table.lipgloss.BorderRow(*rules.RowBorder)
+	}
 }
 
 // Finish finishes rendering a TableElement.
