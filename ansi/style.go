@@ -91,6 +91,12 @@ type StyleTable struct {
 	CenterSeparator *string `json:"center_separator,omitempty"`
 	ColumnSeparator *string `json:"column_separator,omitempty"`
 	RowSeparator    *string `json:"row_separator,omitempty"`
+
+	// RowBorder draws a horizontal rule between body rows. Leaving it unset
+	// keeps glamour's historical table look, where only the header rule and the
+	// column separators are drawn. The separator characters above choose the
+	// glyph; this chooses whether the rule is drawn at all.
+	RowBorder *bool `json:"row_border,omitempty"`
 }
 
 // StyleConfig is used to configure the styling behavior of an ANSIRenderer.
