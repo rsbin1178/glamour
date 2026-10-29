@@ -7,7 +7,6 @@ import (
 	"io"
 	"strings"
 
-	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -71,7 +70,7 @@ type PaddingFunc = func(w io.Writer)
 type PaddingWriter struct {
 	Padding int
 	PadFunc PaddingFunc
-	w       *lipgloss.WrapWriter
+	w       *penWriter
 	cache   bytes.Buffer
 }
 
@@ -80,7 +79,7 @@ func NewPaddingWriter(w io.Writer, padding int, padFunc PaddingFunc) *PaddingWri
 	return &PaddingWriter{
 		Padding: padding,
 		PadFunc: padFunc,
-		w:       lipgloss.NewWrapWriter(w),
+		w:       newPenWriter(w),
 	}
 }
 
@@ -146,7 +145,7 @@ type IndentWriter struct {
 	Indent     int
 	IndentFunc PaddingFunc
 	w          io.Writer
-	pw         *lipgloss.WrapWriter
+	pw         *penWriter
 	skipIndent bool
 }
 
@@ -155,7 +154,7 @@ func NewIndentWriter(w io.Writer, indent int, indentFunc IndentFunc) *IndentWrit
 	return &IndentWriter{
 		Indent:     indent,
 		IndentFunc: indentFunc,
-		pw:         lipgloss.NewWrapWriter(w),
+		pw:         newPenWriter(w),
 		w:          w,
 	}
 }
