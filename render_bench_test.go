@@ -47,3 +47,26 @@ func BenchmarkRenderMixed(b *testing.B) {
 		b.Run(fmt.Sprintf("blocks=%d", n), func(b *testing.B) { benchRender(b, mixedDoc(n)) })
 	}
 }
+
+func codeBlockDoc(language string, size int) string {
+	const line = "value := compute(alpha, beta)\n"
+
+	return "```" + language + "\n" + strings.Repeat(line, size/len(line)+1)[:size] + "```\n"
+}
+
+// BenchmarkRenderCodeBlock separates the two code-block paths: a fence with no
+// info string selects no lexer, and one with an info string runs chroma over the
+// whole body. The first must not pay for the lexer registry's analysers.
+func BenchmarkRenderCodeBlock(b *testing.B) {
+	for _, size := range []int{8 << 10, 32 << 10} {
+		for _, language := range []string{"go", ""} {
+			name := "labelled"
+			if language == "" {
+				name = "unlabelled"
+			}
+			b.Run(fmt.Sprintf("%s/bytes=%d", name, size), func(b *testing.B) {
+				benchRender(b, codeBlockDoc(language, size))
+			})
+		}
+	}
+}
