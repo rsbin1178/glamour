@@ -133,10 +133,21 @@ func (e *CodeBlockElement) Render(w io.Writer, ctx RenderContext) error {
 	if len(theme) > 0 {
 		_, _ = renderText(iw, bs.Current().Style.StylePrimitive, rules.BlockPrefix)
 
-		err := quick.Highlight(iw, e.Code, e.Language, formatter, theme)
+		// A block with no info string selects no lexer. quick.Highlight would run
+		// every registered analyser over the code to guess one, which costs a full
+		// scan of the registry for an answer the author never asked for; the block
+		// renders in the code-block style instead.
+		var err error
+		if e.Language == "" {
+			el := &BaseElement{Token: e.Code, Style: rules.StylePrimitive}
+			err = el.Render(iw, ctx)
+		} else {
+			err = quick.Highlight(iw, e.Code, e.Language, formatter, theme)
+		}
 		if err != nil {
 			return fmt.Errorf("glamour: error highlighting code: %w", err)
 		}
+
 		_, _ = renderText(iw, bs.Current().Style.StylePrimitive, rules.BlockSuffix)
 		return nil
 	}
